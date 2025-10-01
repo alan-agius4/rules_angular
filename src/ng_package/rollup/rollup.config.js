@@ -221,14 +221,13 @@ const config = {
     sourcemap: !dtsMode,
     banner: bannerContent,
     entryFileNames: '[name].' + outExtension,
-    // Hashing is needed as otherwise rollup will emit files with `.d.d.ts` in some cases.
     chunkFileNames: chunkInfo => {
-      console.error(chunkInfo);
+      // We remove `.d` and for shared chunks rollup will name the chunk with an ending `.d` example `location.d` which will result in the file name being named as such.
+      // This is because rollup doesn't consider `.d.ts` as an extension.
+      // This method is also shared for conflicts within the same complication as if a conflict exist rollup will name the output to
       chunkInfo.name = chunkInfo.name.endsWith('.d') ? chunkInfo.name.slice(0, -2) : chunkInfo.name;
 
-      //const name = chunkInfo.name.endsWith('.d') ? chunkInfo.name.slice(0, -2) : chunkInfo.name;
-
-      return `${chunkInfo.name}-chunk.${outExtension}`;
+      return `module-chunk.${outExtension}`;
     },
   },
 };
