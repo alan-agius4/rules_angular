@@ -128,6 +128,7 @@ function resolveBazel(importee, importer) {
       }
     } else if (extension === '.ts') {
       console.error({resolved})
+      throw new Error('resolved'+resolved)
       const resolved_mjs = resolved.slice(0, -3) + '.d.ts';
       if (fileExists(resolved_mjs)) {
         resolved = resolved_mjs;
