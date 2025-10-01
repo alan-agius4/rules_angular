@@ -119,9 +119,15 @@ function resolveBazel(importee, importer) {
   }
 
   if (resolved) {
-    if (path.extname(resolved) == '.js') {
+    const extension = path.extname(resolved);
+    if (extension === '.js') {
       // check for .mjs file and prioritize that
       const resolved_mjs = resolved.slice(0, -3) + '.mjs';
+      if (fileExists(resolved_mjs)) {
+        resolved = resolved_mjs;
+      }
+    } else if (extension === '.ts') {
+      const resolved_mjs = resolved.slice(0, -3) + '.d.ts';
       if (fileExists(resolved_mjs)) {
         resolved = resolved_mjs;
       }
@@ -222,5 +228,8 @@ const config = {
     chunkFileNames: '[name]-[hash].' + outExtension,
   },
 };
+
+
+
 
 module.exports = config;
