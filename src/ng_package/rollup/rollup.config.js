@@ -227,7 +227,7 @@ const config = {
 
       const name = chunkInfo.name.endsWith('.d') ? chunkInfo.name.slice(0, -2) : chunkInfo.name;
 
-      return `${name}-shared.${outExtension}`;
+      return `${name}-chunk.${outExtension}`;
     },
   },
 };
