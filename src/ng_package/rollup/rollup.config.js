@@ -189,14 +189,16 @@ const sideEffectFileMatchers = sideEffectEntryPoints.map(entryPointModule => {
 });
 
 if (dtsMode) {
-  plugins.push(dts());
+    plugins.push(nodeResolve({
+    jail: process.cwd(),
+    extensions: ['.d.ts'],
+  }), dts());
 } else {
   plugins.push(
     {name: 'resolveBazel', resolveId: resolveBazel},
     nodeResolve({
       mainFields: ['es2020', 'es2015', 'module', 'browser'],
       jail: process.cwd(),
-      extensions: ['.mjs', '.js', '.d.ts'],
       customResolveOptions: {moduleDirectory: nodeModulesRoot},
     }),
     commonjs({ignoreGlobal: true}),
