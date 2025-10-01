@@ -127,8 +127,8 @@ function resolveBazel(importee, importer) {
         resolved = resolved_mjs;
       }
     } else if (extension === '.ts') {
-      console.error({resolved})
-      throw new Error('resolved'+resolved)
+      console.error({resolved});
+      throw new Error('resolved' + resolved);
       const resolved_mjs = resolved.slice(0, -3) + '.d.ts';
       if (fileExists(resolved_mjs)) {
         resolved = resolved_mjs;
@@ -196,6 +196,7 @@ if (dtsMode) {
     nodeResolve({
       mainFields: ['es2020', 'es2015', 'module', 'browser'],
       jail: process.cwd(),
+      extensions: ['.mjs', '.js', '.d.ts'],
       customResolveOptions: {moduleDirectory: nodeModulesRoot},
     }),
     commonjs({ignoreGlobal: true}),
@@ -230,8 +231,5 @@ const config = {
     chunkFileNames: '[name]-[hash].' + outExtension,
   },
 };
-
-
-
 
 module.exports = config;
