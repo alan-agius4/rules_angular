@@ -189,10 +189,7 @@ const sideEffectFileMatchers = sideEffectEntryPoints.map(entryPointModule => {
 });
 
 if (dtsMode) {
-    plugins.push(nodeResolve({
-    jail: process.cwd(),
-    extensions: ['.d.ts'],
-  }), dts());
+  plugins.push(dts());
 } else {
   plugins.push(
     {name: 'resolveBazel', resolveId: resolveBazel},
@@ -230,7 +227,12 @@ const config = {
     banner: bannerContent,
     entryFileNames: '[name].' + outExtension,
     // Hashing is needed as otherwise rollup will emit files with `.d.d.ts` in some cases.
-    chunkFileNames: '[name]-[hash].' + outExtension,
+    chunkFileNames: chunkInfo => {
+      return (
+        (chunkInfo.name.endsWith('.d') ? chunkInfo.name.slice(0, -2) : chunkInfo.name) +
+        outExtension
+      );
+    },
   },
 };
 
