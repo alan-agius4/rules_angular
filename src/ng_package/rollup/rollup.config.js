@@ -126,8 +126,12 @@ function resolveBazel(importee, importer) {
       if (fileExists(resolved_mjs)) {
         resolved = resolved_mjs;
       }
+    } else if (extension === '.ts') {
+      const resolved_mjs = resolved.slice(0, -3) + '.d.ts';
+      if (fileExists(resolved_mjs)) {
+        resolved = resolved_mjs;
+      }
     }
-
     log_verbose(`resolved to ${resolved}`);
   } else {
     log_verbose(`allowing rollup to resolve '${importee}' with node module resolution`);
