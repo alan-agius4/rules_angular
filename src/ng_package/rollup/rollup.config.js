@@ -119,15 +119,12 @@ function resolveBazel(importee, importer) {
   }
 
   if (resolved) {
-    const extension = path.extname(resolved);
-    if (extension === '.js') {
+    if (path.extname(resolved) == '.js') {
       // check for .mjs file and prioritize that
       const resolved_mjs = resolved.slice(0, -3) + '.mjs';
       if (fileExists(resolved_mjs)) {
         resolved = resolved_mjs;
       }
-    } else if (extension === '.ts') {
-      return null;
     }
     log_verbose(`resolved to ${resolved}`);
   } else {
@@ -204,6 +201,10 @@ const outExtension = dtsMode ? 'd.ts' : 'mjs';
 const config = {
   input,
   plugins,
+  sanitizeFileName: (filename) => {
+    console.log({ filename});
+    return filename;
+  },
   external: [TMPL_external],
   treeshake: {
     // Note: Rollup would otherwise eagerly remove e.g. PURE statements. We should
@@ -221,14 +222,8 @@ const config = {
     sourcemap: !dtsMode,
     banner: bannerContent,
     entryFileNames: '[name].' + outExtension,
-    chunkFileNames: chunkInfo => {
-      // We remove `.d` and for shared chunks rollup will name the chunk with an ending `.d` example `location.d` which will result in the file name being named as such.
-      // This is because rollup doesn't consider `.d.ts` as an extension.
-      // This method is also shared for conflicts within the same complication as if a conflict exist rollup will name the output to
-      chunkInfo.name = chunkInfo.name.endsWith('.d') ? chunkInfo.name.slice(0, -2) : chunkInfo.name;
-
-      return `module-chunk.${outExtension}`;
-    },
+    // We do not use hashing as
+    chunkFileNames: '[name]-chunk' + outExtension,
   },
 };
 
