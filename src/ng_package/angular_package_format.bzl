@@ -257,8 +257,8 @@ def _angular_package_format_impl(ctx):
         collected_entry_points.append(struct(
             module_name = module_name,
             es2022_entry_point = es2022_entry_point,
-            fesm2022_file = "fesm2022/%s.mjs" % bundle_name_base,
-            dts_bundle_relative_path = "types/%s.d.ts" % bundle_name_base,
+            fesm2022_file = "fesm2022/%s.mjs" % bundle_name_base.replace('/', '-'),
+            dts_bundle_relative_path = "types/%s.d.ts" % bundle_name_base.replace('/', '-'),
             typings_entry_point = typings_entry_point,
             # TODO: Determine if we can just remove this as we are always "guessing" now
             guessed_paths = True,
