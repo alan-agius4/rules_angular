@@ -229,7 +229,8 @@ const config = {
     // Hashing is needed as otherwise rollup will emit files with `.d.d.ts` in some cases.
     chunkFileNames: chunkInfo => {
       return (
-        (chunkInfo.name.endsWith('.d') ? chunkInfo.name.slice(0, -2) : chunkInfo.name) +
+        'foo'+
+        '.' +
         outExtension
       );
     },
