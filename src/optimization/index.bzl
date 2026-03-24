@@ -1,6 +1,6 @@
-load("@aspect_bazel_lib//lib:run_binary.bzl", "run_binary")
 load("@aspect_rules_js//js:defs.bzl", "js_run_devserver")
 load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+load("@bazel_lib//lib:run_binary.bzl", "run_binary")
 
 def optimize_angular_app(
         name,
@@ -27,7 +27,7 @@ def optimize_angular_app(
             ":_%s_package" % name,
             "@yq_toolchains//:resolved_toolchain",
             "@rules_angular//src/optimization/boilerplate",
-            "@rules_angular//src/optimization:ng_cli_tool"
+            "@rules_angular//src/optimization:ng_cli_tool",
         ] + deps,
         out_dirs = ["%s_cli_execution" % name],
         use_default_shell_env = True,

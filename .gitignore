@@ -1,4 +1,0 @@
-bazel-*
-node_modules/
-.vscode/
-dist/

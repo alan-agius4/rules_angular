@@ -30,14 +30,15 @@ function removeCommentsPlugin() {
       const result = transformSync(code, {
         filename: id,
         comments: true,
+        inputSourceMap: false, // Enabling input sourcemaps causes sourcemaps to break.
         sourceMaps: true,
         generatorOpts: {
-          shouldPrintComment: comment => {
-            const text = comment.value?.trim();
-            const shouldPreserve =
-              text?.includes('__PURE__') || /@license|@preserve|^!/i.test(text);
+          shouldPrintComment: (comment) => {
+            if (!comment) {
+              return false;
+            }
 
-            return shouldPreserve;
+            return comment.includes('__PURE__') || /@license|@preserve|^!/i.test(comment);
           },
         },
       });
@@ -136,7 +137,7 @@ function resolveBazel(importee, importer) {
         // note that the module_root attribute is intended to be used for type-checking
         // so it uses eg. "index.d.ts". At runtime, we have only index.js, so we strip the
         // .d.ts suffix and let node require.resolve do its thing.
-        var v = dtsMode ? moduleMappings[k] : moduleMappings[k].replace(/\.d\.ts$/, '');
+        var v = moduleMappings[k].replace(/\.d\.ts$/, '');
         const mappedImportee = path.join(v, normalizedImportee.slice(k.length + 1));
         log_verbose(`module mapped '${importee}' to '${mappedImportee}'`);
         resolved = resolveInRootDir(mappedImportee);
@@ -204,17 +205,17 @@ for (const info of Object.values(entrypointMetadata)) {
   input[chunkName] = entryFile;
 }
 
-const sideEffectFileMatchers = sideEffectEntryPoints.map(entryPointModule => {
+const sideEffectFileMatchers = sideEffectEntryPoints.map((entryPointModule) => {
   const entryPointDir = path.join(
     process.cwd(), // Execroot.
     path.dirname(entrypointMetadata[entryPointModule].index.path),
   );
 
-  return file => file.startsWith(`${entryPointDir}/`);
+  return (file) => file.startsWith(`${entryPointDir}/`);
 });
 
 if (dtsMode) {
-  plugins.push({name: 'resolveBazel', resolveId: resolveBazel}, dts());
+  plugins.push(dts());
 } else {
   plugins.push(
     {name: 'resolveBazel', resolveId: resolveBazel},
@@ -243,14 +244,15 @@ const config = {
     annotations: false,
     propertyReadSideEffects: false,
     unknownGlobalSideEffects: false,
-    moduleSideEffects: id => {
-      return sideEffectFileMatchers.some(matcher => matcher(id));
+    moduleSideEffects: (id) => {
+      return sideEffectFileMatchers.some((matcher) => matcher(id));
     },
   },
   output: {
     // Rollup will add a `.d` as part of the filename instead of an extension.
     // This will avoid outputting `.d.d.ts`.
-    sanitizeFileName: fileName => (fileName.endsWith('.d') ? fileName.slice(0, -2) : fileName),
+    sanitizeFileName: (fileName) =>
+      (fileName.endsWith('.d') ? fileName.slice(0, -2) : fileName).replace(/\x00/g, ''),
     minifyInternalExports: false,
     sourcemap: !dtsMode,
     banner: bannerContent,

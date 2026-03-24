@@ -3,12 +3,13 @@ load("//src/ng_package:angular_package_format.bzl", "angular_package_format")
 load("//src/ng_package/text_replace:index.bzl", "text_replace")
 
 def ng_package(
-    name,
-    nested_packages = [],
-    substitutions = {},
-    tags = [],
-    replace_prefixes = {},
-    **kwargs):
+        name,
+        nested_packages = [],
+        substitutions = {},
+        tags = [],
+        replace_prefixes = {},
+        data = [],
+        **kwargs):
     angular_package_format(
         name = "%s_apf" % name,
         **kwargs
@@ -24,7 +25,7 @@ def ng_package(
         name = name,
         srcs = [
             "%s_apf_substituted" % name,
-        ] + nested_packages,
+        ] + nested_packages + data,
         replace_prefixes = dict({
             "%s_apf_substituted/%s_apf" % (name, name): "/",
             "schematics/npm_package/": "schematics/",
